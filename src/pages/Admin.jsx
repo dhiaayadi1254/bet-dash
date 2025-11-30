@@ -36,6 +36,11 @@ const Admin = () => {
 
   const addBalance = () => {
     if (!balanceForm.name || !balanceForm.amount) { alert("عمّر الاسم والمبلغ"); return; }
+
+    const targetUser = users.find(u => u.name === balanceForm.name);
+    if (!targetUser) { alert("المستخدم غير موجود"); return; }
+    if (targetUser.role === 'admin') { alert("لا يمكن زيادة الرصيد للـAdmin"); return; }
+
     setUsers(users.map(u => u.name === balanceForm.name ? { ...u, balance: Number(u.balance) + Number(balanceForm.amount) } : u));
     setBalanceForm({ name: '', amount: '' });
   };
@@ -70,6 +75,7 @@ const Admin = () => {
         </div>
 
         <div className="bg-white rounded shadow p-6">
+          {/* إنشاء المستخدمين */}
           {activeTab === "createUser" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Sub Admin */}
@@ -91,18 +97,47 @@ const Admin = () => {
             </div>
           )}
 
+          {/* إضافة رصيد */}
           {activeTab === "addBalance" && (
             <div className="bg-white p-6 rounded-xl shadow-lg max-w-xl mx-auto">
               <h2 className="text-xl font-bold mb-4 text-purple-600">إضافة رصيد</h2>
-              <input value={balanceForm.name} onChange={e => setBalanceForm({ ...balanceForm, name: e.target.value })} placeholder="اسم المستخدم" className="w-full p-3 border rounded-lg mb-3"/>
+              <input value={balanceForm.name} onChange={e => setBalanceForm({ ...balanceForm, name: e.target.value })} placeholder="اختر مستخدم (SubAdmin أو Client)" className="w-full p-3 border rounded-lg mb-3"/>
               <input type="number" value={balanceForm.amount} onChange={e => setBalanceForm({ ...balanceForm, amount: e.target.value })} placeholder="المبلغ" className="w-full p-3 border rounded-lg mb-4"/>
               <button onClick={addBalance} className="bg-purple-600 text-white w-full py-2 rounded-lg hover:bg-purple-700">إضافة الرصيد</button>
             </div>
           )}
 
+          {/* جدول المستخدمين مع الكروت */}
           {activeTab === "usersTable" && (
             <div>
+              {/* Dashboard Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-white p-4 rounded-xl shadow flex flex-col items-center justify-center">
+                  <span className="text-3xl">👥</span>
+                  <p className="font-bold text-lg mt-2">المستخدمين</p>
+                  <p className="text-gray-500">{users.length}</p>
+                </div>
+                <div className="bg-white p-4 rounded-xl shadow flex flex-col items-center justify-center">
+                  <span className="text-3xl">💰</span>
+                  <p className="font-bold text-lg mt-2">إجمالي الرصيد</p>
+                  <p className="text-gray-500">{users.reduce((sum, u) => sum + u.balance, 0)} TND</p>
+                </div>
+                <div className="bg-white p-4 rounded-xl shadow flex flex-col items-center justify-center">
+                  <span className="text-3xl">👤</span>
+                  <p className="font-bold text-lg mt-2">Clients</p>
+                  <p className="text-gray-500">{users.filter(u => u.role === 'client').length}</p>
+                </div>
+                <div className="bg-white p-4 rounded-xl shadow flex flex-col items-center justify-center">
+                  <span className="text-3xl">🧡</span>
+                  <p className="font-bold text-lg mt-2">SubAdmins</p>
+                  <p className="text-gray-500">{users.filter(u => u.role === 'subadmin').length}</p>
+                </div>
+              </div>
+
+              {/* Search input */}
               <input type="text" placeholder="🔍 ابحث..." value={search} onChange={e => setSearch(e.target.value)} className="w-full p-3 rounded-xl border mb-4"/>
+
+              {/* Users Table */}
               <div className="overflow-x-auto shadow-lg rounded-xl bg-white">
                 <table className="w-full text-center">
                   <thead className="bg-gray-100">

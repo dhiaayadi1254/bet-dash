@@ -23,6 +23,7 @@ const SuperAdmin = () => {
     totalUsers: users.length,
     totalBalance: users.reduce((s, u) => s + u.balance, 0),
     admins: users.filter(u => u.role === "admin").length,
+    subadmins: users.filter(u => u.role === "subadmin").length,
     clients: users.filter(u => u.role === "client").length
   };
 
@@ -98,6 +99,7 @@ const SuperAdmin = () => {
           <StatCardSmall title="المستخدمين" value={stats.totalUsers} emoji="👥" color="blue" />
           <StatCardSmall title="إجمالي الرصيد" value={stats.totalBalance} emoji="💰" color="green" />
           <StatCardSmall title="Admins" value={stats.admins} emoji="👑" color="red" />
+          <StatCardSmall title="Sub Admins" value={stats.subadmins} emoji="🛡️" color="orange" />
           <StatCardSmall title="Clients" value={stats.clients} emoji="👤" color="purple" />
         </div>
 
@@ -174,7 +176,7 @@ const AddBalanceForm = ({ users, onAdd }) => {
 
 const UsersTable = ({ users, onDelete }) => {
   const [filter, setFilter] = useState("");
-  const [showPassword, setShowPassword] = useState({}); // لتخزين حالة العرض لكل مستخدم
+  const [showPassword, setShowPassword] = useState({});
 
   const filtered = users.filter(u =>
     u.name.toLowerCase().includes(filter.toLowerCase())
